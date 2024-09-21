@@ -12,7 +12,7 @@ class ProductItem extends StatelessWidget {
     return ListTile(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       tileColor: Colors.white,
-      title: Text(product.productName),
+      title: Text(product.productName ?? "Product Name is Not Available"),
       leading: const CircleAvatar(
         backgroundImage:
             NetworkImage("https://images.unsplash.com/photo-1500648767791-00"),
@@ -20,10 +20,10 @@ class ProductItem extends StatelessWidget {
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Product Code: ${product.productCode}"),
-          Text("Quantity: ${product.quantity}"),
-          Text("Unit Price: ₹${product.productUnitPrice}"),
-          Text("Total Price: ${product.totalPrice}"),
+          Text("Product Code: ${product.productCode ?? "Not Available"}"),
+          Text("Quantity: ${product.quantity ?? "Not Available"}"),
+          Text("Unit Price: ₹${product.productUnitPrice ?? "Not Available"}"),
+          Text("Total Price: ${product.totalPrice ?? "Not Available"}"),
           const Divider(),
           ButtonBar(
             alignment: MainAxisAlignment.spaceBetween,

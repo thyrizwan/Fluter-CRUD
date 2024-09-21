@@ -61,7 +61,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
   }
 
   Future<void> getProducts() async {
-    Uri uri = Uri.parse('http://164.68.107.70:6060/products');
+    Uri uri = Uri.parse('http://164.68.107.70:6060/api/v1/ReadProduct');
     Response response = await get(uri);
     productsList = [];
     if (response.statusCode == 200) {
