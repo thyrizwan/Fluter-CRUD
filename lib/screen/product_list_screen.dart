@@ -15,6 +15,7 @@ class ProductListScreen extends StatefulWidget {
 
 class _ProductListScreenState extends State<ProductListScreen> {
   List<Product> productsList = [];
+  bool _inProgress = false;
 
   @override
   void initState() {
@@ -27,26 +28,47 @@ class _ProductListScreenState extends State<ProductListScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Product List"),
+        actions: [
+          IconButton(
+            onPressed: () {
+              getProducts();
+            },
+            icon: const Icon(
+              Icons.refresh,
+              color: Colors.white,
+            ),
+          ),
+        ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: ListView.separated(
-          itemCount: productsList.length,
-          itemBuilder: (context, index) {
-            return ProductItem(
-              product: productsList[index],
-            );
-          },
-          separatorBuilder: (context, index) {
-            return const SizedBox(
-              height: 4,
-            );
-          },
-        ),
-      ),
+      body: _inProgress
+          ? const Center(
+              child: CircularProgressIndicator(
+                color: Colors.pink,
+              ),
+            )
+          : Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: ListView.separated(
+                itemCount: productsList.length,
+                itemBuilder: (context, index) {
+                  return ProductItem(
+                    product: productsList[index],
+                  );
+                },
+                separatorBuilder: (context, index) {
+                  return const SizedBox(
+                    height: 4,
+                  );
+                },
+              ),
+            ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.pink.shade50,
         onPressed: onFloatingAddButtonTap,
-        child: const Icon(Icons.add),
+        child: const Icon(
+          Icons.add,
+          color: Colors.pink,
+        ),
       ),
     );
   }
@@ -61,9 +83,11 @@ class _ProductListScreenState extends State<ProductListScreen> {
   }
 
   Future<void> getProducts() async {
+    _inProgress = true;
+    setState(() {});
+    productsList.clear();
     Uri uri = Uri.parse('http://164.68.107.70:6060/api/v1/ReadProduct');
     Response response = await get(uri);
-    productsList = [];
     if (response.statusCode == 200) {
       // Map<String, dynamic> responseBody = response.body as Map<String, dynamic>;
       Map<String, dynamic> responseBody = jsonDecode(response.body);
@@ -81,6 +105,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
         productsList.add(currentProdutct);
       }
     }
+    _inProgress = false;
     setState(() {});
   }
 }

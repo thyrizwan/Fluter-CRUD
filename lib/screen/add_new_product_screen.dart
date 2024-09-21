@@ -1,6 +1,9 @@
 // ignore_for_file: unused_element
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 
 class AddNewProductScreen extends StatefulWidget {
   const AddNewProductScreen({super.key});
@@ -20,6 +23,7 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
   final TextEditingController _totalPriceTEController = TextEditingController();
   final TextEditingController _productImageTEController =
       TextEditingController();
+  bool _inProgress = false;
 
   @override
   Widget build(BuildContext context) {
@@ -27,13 +31,13 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
       appBar: AppBar(
         title: const Text("Add New Product"),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: _buildNewProductForm(context),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: _buildNewProductForm(context),
+        ),
       ),
     );
-
-    void onTapAddNewButton() {}
 
     @override
     void dispose() {
@@ -119,15 +123,63 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
           ),
           const SizedBox(height: 16),
           ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
+            onPressed: _onTapAddNewButton,
             style: ElevatedButton.styleFrom(
               fixedSize: const Size.fromWidth(double.maxFinite),
             ),
             child: const Text("Add New Product"),
           ),
         ],
+      ),
+    );
+  }
+
+  void _onTapAddNewButton() {
+    if (_formKey.currentState!.validate()) {
+      addNewProduct();
+    }
+  }
+
+  Future<void> addNewProduct() async {
+    _inProgress = true;
+    setState(() {});
+    Uri uri = Uri.parse('http://164.68.107.70:6060/api/v1/CreateProduct');
+    Map<String, dynamic> requestBody = {
+      "Img": "Here will be url",
+      "ProductCode": "RANDOM_CODE",
+      "ProductName": "Added by Rizwan Ansari",
+      "Qty": "999999",
+      "TotalPrice": "999999",
+      "UnitPrice": "999999"
+    };
+    Response response = await post(uri,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(requestBody));
+    if (response.statusCode == 200) {
+      _showSuccessSnackBar();
+    } else {
+      _showFailureSnackBar();
+    }
+    _inProgress = false;
+    setState(() {});
+  }
+
+  void _showSuccessSnackBar() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Successfully Added!'),
+        backgroundColor: Colors.green,
+      ),
+    );
+  }
+
+  void _showFailureSnackBar() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Operation failed. Please try again.'),
+        backgroundColor: Colors.red,
       ),
     );
   }

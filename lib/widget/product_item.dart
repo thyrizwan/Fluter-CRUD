@@ -13,10 +13,6 @@ class ProductItem extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       tileColor: Colors.white,
       title: Text(product.productName ?? "Product Name is Not Available"),
-      leading: const CircleAvatar(
-        backgroundImage:
-            NetworkImage("https://images.unsplash.com/photo-1500648767791-00"),
-      ),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
