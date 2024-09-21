@@ -23,6 +23,12 @@ class _ProductListScreenState extends State<ProductListScreen> {
     getProducts();
   }
 
+  void _removeProduct(Product product) {
+    setState(() {
+      productsList.remove(product); // Remove the product from the list
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,6 +59,10 @@ class _ProductListScreenState extends State<ProductListScreen> {
                 itemBuilder: (context, index) {
                   return ProductItem(
                     product: productsList[index],
+                    onDelete: () {
+                      _removeProduct(productsList[
+                          index]); // Optional: Remove product on delete
+                    },
                   );
                 },
                 separatorBuilder: (context, index) {
@@ -99,7 +109,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
           quantity: item['Qty'],
           productUnitPrice: item['UnitPrice'],
           totalPrice: item['TotalPrice'],
-          productImage: item['img'],
+          productImage: item['Img'],
           createdAt: item['CreatedDate'],
         );
         productsList.add(currentProdutct);

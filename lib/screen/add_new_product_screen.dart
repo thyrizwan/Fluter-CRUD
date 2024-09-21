@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:myapp/screen/product_list_screen.dart';
 
 class AddNewProductScreen extends StatefulWidget {
   const AddNewProductScreen({super.key});
@@ -56,6 +57,12 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
       key: _formKey,
       child: Column(
         children: [
+          const SizedBox(height: 24),
+          Text(
+            "Add New Product",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+          ),
+          const SizedBox(height: 16),
           TextFormField(
             controller: _productNameTEController,
             decoration: const InputDecoration(
@@ -122,13 +129,23 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                 value!.isEmpty ? "Please enter a value" : null,
           ),
           const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: _onTapAddNewButton,
-            style: ElevatedButton.styleFrom(
-              fixedSize: const Size.fromWidth(double.maxFinite),
-            ),
-            child: const Text("Add New Product"),
-          ),
+          _inProgress
+              ? Center(
+                  child: CircularProgressIndicator(),
+                )
+              : ElevatedButton(
+                  onPressed: _onTapAddNewButton,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.pink.shade700, // background color
+                    foregroundColor: Colors.white, // text color
+                    minimumSize:
+                        const Size(double.infinity, 50), // width and height
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                  ),
+                  child: const Text("Add New Product"),
+                ),
         ],
       ),
     );
@@ -143,22 +160,37 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
   Future<void> addNewProduct() async {
     _inProgress = true;
     setState(() {});
+
     Uri uri = Uri.parse('http://164.68.107.70:6060/api/v1/CreateProduct');
     Map<String, dynamic> requestBody = {
-      "Img": "Here will be url",
-      "ProductCode": "RANDOM_CODE",
-      "ProductName": "Added by Rizwan Ansari",
-      "Qty": "999999",
-      "TotalPrice": "999999",
-      "UnitPrice": "999999"
+      "Img": _productImageTEController.text,
+      "ProductCode": _productCodeTEController.text,
+      "ProductName": _productNameTEController.text,
+      "Qty": _quantityTEController.text,
+      "TotalPrice": _totalPriceTEController.text,
+      "UnitPrice": _unitPriceTEController.text
     };
+
     Response response = await post(uri,
         headers: {
           'Content-Type': 'application/json',
         },
         body: jsonEncode(requestBody));
+    Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const ProductListScreen(),
+        ),
+        (value) => false);
     if (response.statusCode == 200) {
+      _clearTextField();
       _showSuccessSnackBar();
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const ProductListScreen(),
+          ),
+          (value) => false);
     } else {
       _showFailureSnackBar();
     }
@@ -182,5 +214,14 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
         backgroundColor: Colors.red,
       ),
     );
+  }
+
+  void _clearTextField() {
+    _productNameTEController.clear();
+    _productCodeTEController.clear();
+    _quantityTEController.clear();
+    _unitPriceTEController.clear();
+    _totalPriceTEController.clear();
+    _productImageTEController.clear();
   }
 }
